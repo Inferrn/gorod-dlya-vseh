@@ -16,11 +16,9 @@
 import { RampEntity } from "./ramp.entity";
 import { IHttpClient } from "../../shared/http/http-client";
 import { Result } from "../../shared/result/result";
+import { GeoPoint } from "../../shared/geo/geo-point";
 
-/**
- * Путь эндпоинта для создания съезда. Вынесен в константу.
- * ПРИМЕЧАНИЕ: уточни у бэкенда реальный путь и при необходимости поправь.
- */
+/** Путь эндпоинта для создания съезда (бэкенд: POST /api/ramps). */
 export const RAMP_ENDPOINT = "/ramps";
 
 /**
@@ -38,9 +36,10 @@ export class RampRepository {
   /**
    * Отправить съезд на бэкенд методом POST.
    * @param entity готовая (распарсенная) entity
+   * @param point координаты точки с карты — бэкенд требует latitude/longitude
    * @returns Result с ответом сервера (id созданной записи) или ошибкой
    */
-  async create(entity: RampEntity): Promise<Result<RampCreatedResponse>> {
-    return this.http.post<RampCreatedResponse>(RAMP_ENDPOINT, entity);
+  async create(entity: RampEntity, point: GeoPoint): Promise<Result<RampCreatedResponse>> {
+    return this.http.post<RampCreatedResponse>(RAMP_ENDPOINT, { ...point, ...entity });
   }
 }

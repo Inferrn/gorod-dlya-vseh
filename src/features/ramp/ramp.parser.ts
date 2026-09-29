@@ -23,7 +23,7 @@
 import { RampEntity, RampFormInput } from "./ramp.entity";
 import { DictionaryService } from "../../shared/dictionary/dictionary-service";
 import { parseFloat_, parseBool } from "../../shared/parsing/parsers";
-import { Result, ok } from "../../shared/result/result";
+import { Result, ok, err } from "../../shared/result/result";
 
 export class RampParser {
   /**
@@ -39,6 +39,12 @@ export class RampParser {
    */
   parse(input: RampFormInput): Result<RampEntity> {
     // --- 1. FK-поле: текст варианта → числовой id ---------------------------
+    // Пустая строка = пользователь ничего не выбрал. Говорим об этом его
+    // словами (название поля), а не внутренними («неизвестный вариант»).
+    if (!input.curbHeightVariant) {
+      return err("Заполните поле «Высота бордюра»");
+    }
+
     // variantToId сам вернёт Err, если справочник не загружен или вариант
     // неизвестен. Сразу пробрасываем такую ошибку наверх.
     const curbHeightResult = this.curbHeightDict.variantToId(input.curbHeightVariant);

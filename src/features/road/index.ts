@@ -6,6 +6,7 @@
 
 import { IHttpClient } from "../../shared/http/http-client";
 import { Result } from "../../shared/result/result";
+import { GeoPoint } from "../../shared/geo/geo-point";
 
 import { RoadFormInput } from "./road.entity";
 import { RoadParser } from "./road.parser";
@@ -19,7 +20,7 @@ export type { RoadCreatedResponse } from "./road.repository";
 export interface RoadFeature {
   /** Справочник покрытия — load() перед показом в форме. */
   surfaceQualityDict: DictionaryService;
-  submit(input: RoadFormInput): Promise<Result<RoadCreatedResponse>>;
+  submit(input: RoadFormInput, point: GeoPoint): Promise<Result<RoadCreatedResponse>>;
 }
 
 export function createRoadFeature(http: IHttpClient): RoadFeature {
@@ -30,10 +31,10 @@ export function createRoadFeature(http: IHttpClient): RoadFeature {
   return {
     surfaceQualityDict,
 
-    async submit(input: RoadFormInput): Promise<Result<RoadCreatedResponse>> {
+    async submit(input: RoadFormInput, point: GeoPoint): Promise<Result<RoadCreatedResponse>> {
       const parsed = parser.parse(input);
       if (!parsed.ok) return parsed;
-      return repository.create(parsed.value);
+      return repository.create(parsed.value, point);
     },
   };
 }

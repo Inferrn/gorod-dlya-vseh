@@ -9,6 +9,7 @@
 
 import { IHttpClient } from "../../shared/http/http-client";
 import { Result } from "../../shared/result/result";
+import { GeoPoint } from "../../shared/geo/geo-point";
 
 import { CrossingFormInput } from "./crossing.entity";
 import { CrossingParser } from "./crossing.parser";
@@ -30,7 +31,7 @@ export interface CrossingFeature {
     crossingType: DictionaryService;
     tactileTileCondition: DictionaryService;
   };
-  submit(input: CrossingFormInput): Promise<Result<CrossingCreatedResponse>>;
+  submit(input: CrossingFormInput, point: GeoPoint): Promise<Result<CrossingCreatedResponse>>;
 }
 
 export function createCrossingFeature(http: IHttpClient): CrossingFeature {
@@ -44,10 +45,10 @@ export function createCrossingFeature(http: IHttpClient): CrossingFeature {
   return {
     dictionaries: { entranceType, crossingType, tactileTileCondition },
 
-    async submit(input: CrossingFormInput): Promise<Result<CrossingCreatedResponse>> {
+    async submit(input: CrossingFormInput, point: GeoPoint): Promise<Result<CrossingCreatedResponse>> {
       const parsed = parser.parse(input);
       if (!parsed.ok) return parsed;
-      return repository.create(parsed.value);
+      return repository.create(parsed.value, point);
     },
   };
 }

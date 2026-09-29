@@ -15,7 +15,7 @@
 import { CrossingEntity, CrossingFormInput } from "./crossing.entity";
 import { DictionaryService } from "../../shared/dictionary/dictionary-service";
 import { parseBool } from "../../shared/parsing/parsers";
-import { Result, ok } from "../../shared/result/result";
+import { Result, ok, err } from "../../shared/result/result";
 
 export class CrossingParser {
   /**
@@ -29,6 +29,14 @@ export class CrossingParser {
 
   parse(input: CrossingFormInput): Result<CrossingEntity> {
     // --- 1. Три FK-поля: текст → id ----------------------------------------
+    // Сначала проверяем, что всё выбрано: пустая строка = не выбрано,
+    // об этом говорим названием поля, понятным пользователю.
+    if (!input.entranceTypeVariant) return err("Заполните поле «Вход в переход»");
+    if (!input.crossingTypeVariant) return err("Заполните поле «Тип перехода»");
+    if (!input.tactileTileConditionVariant) {
+      return err("Заполните поле «Тактильная плитка в переходе»");
+    }
+
     // Каждый variantToId может вернуть Err (не загружен / неизвестный вариант).
     // Проверяем по очереди и сразу пробрасываем первую же ошибку.
     const entranceType = this.entranceTypeDict.variantToId(input.entranceTypeVariant);

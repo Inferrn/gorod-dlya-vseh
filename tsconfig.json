@@ -10,7 +10,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "lib": ["ES2020", "DOM"],
-    "types": ["leaflet"],
+    "types": ["leaflet", "vite/client"],
     "noEmit": true
   },
   "include": ["src/**/*.ts"]

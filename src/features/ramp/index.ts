@@ -15,6 +15,7 @@
 
 import { IHttpClient } from "../../shared/http/http-client";
 import { Result } from "../../shared/result/result";
+import { GeoPoint } from "../../shared/geo/geo-point";
 
 import { RampFormInput } from "./ramp.entity";
 import { RampParser } from "./ramp.parser";
@@ -36,8 +37,9 @@ export interface RampFeature {
   /**
    * Полный путь: сырой ввод формы → парсинг → отправка на бэк.
    * Перед вызовом нужно один раз загрузить справочник (см. пример ниже).
+   * point — координаты точки, выбранной на карте (бэк требует их в теле).
    */
-  submit(input: RampFormInput): Promise<Result<RampCreatedResponse>>;
+  submit(input: RampFormInput, point: GeoPoint): Promise<Result<RampCreatedResponse>>;
 }
 
 /**
@@ -77,7 +79,7 @@ export function createRampFeature(http: IHttpClient): RampFeature {
   return {
     curbHeightDict,
 
-    async submit(input: RampFormInput): Promise<Result<RampCreatedResponse>> {
+    async submit(input: RampFormInput, point: GeoPoint): Promise<Result<RampCreatedResponse>> {
       // Шаг 1. Парсим сырой ввод в чистую entity.
       const parsed = parser.parse(input);
       if (!parsed.ok) {
@@ -85,8 +87,8 @@ export function createRampFeature(http: IHttpClient): RampFeature {
         return parsed;
       }
 
-      // Шаг 2. Отправляем валидную entity на бэкенд.
-      return repository.create(parsed.value);
+      // Шаг 2. Отправляем валидную entity + координаты точки на бэкенд.
+      return repository.create(parsed.value, point);
     },
   };
 }

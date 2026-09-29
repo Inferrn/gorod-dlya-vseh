@@ -27,6 +27,21 @@
 
 import L from "leaflet";
 
+// Стили и картинки Leaflet тянем из npm-пакета, а не с CDN: приложение
+// собирается в APK и не должно зависеть от внешних ссылок в <head>.
+import "leaflet/dist/leaflet.css";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+// Дефолтная иконка маркера: при сборке бандлером Leaflet сам не находит свои
+// картинки (он ищет их относительно CSS-файла) — задаём пути явно.
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+
 /**
  * ----------------------------------------------------------------------------
  *  ИСТОЧНИК ТАЙЛОВ (картинок карты)
@@ -157,6 +172,70 @@ export class MapScreen {
 
     // --- Нижняя карточка -----------------------------------------------------
     this.buildCard();
+
+    // --- Кнопка "Я здесь" (геолокация) ---------------------------------------
+    this.buildLocateButton();
+
+    // --- Автоцентрирование при запуске ---------------------------------------
+    // Тихо пробуем определить позицию и показать карту там, где стоит волонтёр
+    // (точку НЕ выбираем — только центрируем). Не вышло (нет разрешения, нет
+    // GPS, веб без HTTPS) — молча остаёмся на стартовом центре.
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => this.map.setView([pos.coords.latitude, pos.coords.longitude], 16),
+        () => {},
+        { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 },
+      );
+    }
+  }
+
+  /**
+   * Кнопка "Я здесь": определяет позицию волонтёра по GPS, центрирует карту
+   * и сразу выбирает эту точку (основной сценарий в поле: стою у объекта —
+   * жму кнопку — заполняю форму, не выцеливая точку пальцем).
+   */
+  private buildLocateButton(): void {
+    const btn = document.createElement("button");
+    btn.className = "locate-btn";
+    btn.type = "button";
+    btn.title = "Моё местоположение";
+    btn.textContent = "📍 Я здесь";
+
+    btn.addEventListener("click", () => {
+      if (!("geolocation" in navigator)) {
+        alert("Геолокация не поддерживается на этом устройстве.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Определяем…";
+
+      const restore = () => {
+        btn.disabled = false;
+        btn.textContent = "📍 Я здесь";
+      };
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          restore();
+          const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          this.map.setView([coords.lat, coords.lng], 17);
+          this.selectPoint(coords);
+        },
+        (e) => {
+          restore();
+          // Самая частая причина — не дали разрешение на доступ к геопозиции.
+          const reason =
+            e.code === e.PERMISSION_DENIED
+              ? "Нет разрешения на доступ к геопозиции. Разрешите доступ в настройках."
+              : "Не удалось определить местоположение. Проверьте, включён ли GPS.";
+          alert(reason);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 },
+      );
+    });
+
+    this.container.parentElement?.appendChild(btn);
   }
 
   /** Поставить/переставить маркер и показать карточку с координатами. */

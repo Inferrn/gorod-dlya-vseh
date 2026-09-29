@@ -54,9 +54,14 @@ export function createSelect(label: string, items: DictionaryItem[]): Field<stri
   select.className = "field-select";
 
   // Первый пункт — пустой (placeholder), чтобы не выбралось что-то по умолчанию.
+  // disabled + hidden: в закрытом поле видна подсказка "— выберите —", но в
+  // открывшемся списке вариантов её нет и выбрать её нельзя.
   const placeholder = document.createElement("option");
   placeholder.value = "";
   placeholder.textContent = "— выберите —";
+  placeholder.disabled = true;
+  placeholder.selected = true;
+  placeholder.hidden = true;
   select.appendChild(placeholder);
 
   for (const item of items) {

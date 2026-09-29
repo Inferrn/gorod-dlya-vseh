@@ -12,7 +12,7 @@
 import { RoadEntity, RoadFormInput } from "./road.entity";
 import { DictionaryService } from "../../shared/dictionary/dictionary-service";
 import { parseInt_, parseFloat_, parseBool } from "../../shared/parsing/parsers";
-import { Result, ok } from "../../shared/result/result";
+import { Result, ok, err } from "../../shared/result/result";
 
 export class RoadParser {
   constructor(private readonly surfaceQualityDict: DictionaryService) {}
@@ -23,6 +23,10 @@ export class RoadParser {
     if (!trafficLanes.ok) return trafficLanes;
 
     // --- 2. FK-поле: текст покрытия → id -----------------------------------
+    // Пустая строка = пользователь ничего не выбрал — говорим названием поля.
+    if (!input.surfaceQualityVariant) {
+      return err("Заполните поле «Качество покрытия»");
+    }
     const surfaceQuality = this.surfaceQualityDict.variantToId(input.surfaceQualityVariant);
     if (!surfaceQuality.ok) return surfaceQuality;
 

@@ -7,8 +7,9 @@
 import { RoadEntity } from "./road.entity";
 import { IHttpClient } from "../../shared/http/http-client";
 import { Result } from "../../shared/result/result";
+import { GeoPoint } from "../../shared/geo/geo-point";
 
-/** Путь эндпоинта создания дороги. Уточни у бэкенда и поправь при необходимости. */
+/** Путь эндпоинта создания дороги (бэкенд: POST /api/roads). */
 export const ROAD_ENDPOINT = "/roads";
 
 export interface RoadCreatedResponse {
@@ -18,7 +19,7 @@ export interface RoadCreatedResponse {
 export class RoadRepository {
   constructor(private readonly http: IHttpClient) {}
 
-  async create(entity: RoadEntity): Promise<Result<RoadCreatedResponse>> {
-    return this.http.post<RoadCreatedResponse>(ROAD_ENDPOINT, entity);
+  async create(entity: RoadEntity, point: GeoPoint): Promise<Result<RoadCreatedResponse>> {
+    return this.http.post<RoadCreatedResponse>(ROAD_ENDPOINT, { ...point, ...entity });
   }
 }

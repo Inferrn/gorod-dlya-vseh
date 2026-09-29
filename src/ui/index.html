@@ -2,16 +2,11 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Город для всех</title>
 
-  <!-- Стили Leaflet (обязательны для корректного отображения карты) -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""
-  />
+  <!-- Стили Leaflet импортируются в map-screen.ts из npm-пакета:
+       в APK внешние CDN-ссылки недоступны, всё должно лежать в бандле. -->
 
   <style>
     * { box-sizing: border-box; }
@@ -42,6 +37,27 @@
     }
     .map-card-add:active { opacity: .85; }
 
+    /* Кнопка геолокации "Я здесь" (правый верхний угол, не конфликтует
+       с зумом Leaflet слева и нижней карточкой) */
+    .locate-btn {
+      position: absolute;
+      top: calc(12px + env(safe-area-inset-top));
+      right: 12px;
+      z-index: 1000;
+      height: 44px;
+      padding: 0 16px;
+      background: #fff;
+      color: #333;
+      border: none;
+      border-radius: 22px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.25);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .locate-btn:active { opacity: .85; }
+    .locate-btn:disabled { color: #999; }
+
     /* Панель формы поверх карты (выезжает снизу/справа) */
     .form-panel {
       position: absolute;
@@ -58,7 +74,12 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: 12px 14px; border-bottom: 1px solid #eee; font-size: 15px; font-weight: 500;
     }
-    .panel-header .close { color: #999; cursor: pointer; font-size: 18px; }
+    /* Отрицательный margin компенсирует padding: зона нажатия 44px,
+       а визуально крестик остаётся на прежнем месте. */
+    .panel-header .close {
+      color: #999; cursor: pointer; font-size: 18px;
+      padding: 13px; margin: -13px;
+    }
     .panel-coords { padding: 8px 14px; font-size: 12px; color: #888; border-bottom: 1px solid #f2f2f2; }
 
     /* Секции-аккордеон */
@@ -114,7 +135,7 @@
 
     <div class="panel-footer">
       <button id="save-btn" class="save-btn">Сохранить</button>
-      <div class="hint">Отправка на сервер пока отключена (этап проекта)</div>
+      <div class="hint">Данные попадают в общую базу проекта</div>
     </div>
 
     <pre id="debug" class="debug"></pre>
