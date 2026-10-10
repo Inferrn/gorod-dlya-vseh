@@ -30,8 +30,9 @@ import { CrossingForm } from "./attribute-form/crossing-form";
 import { RoadForm } from "./attribute-form/road-form";
 
 // --- Клиент. Настоящий бэкенд (Spring Boot, см. репозиторий gorod-dlya-vseh_back).
-// Для локальной разработки со своим бэком поменяй адрес на http://localhost:8080/api.
-const API_BASE_URL = "http://90.156.128.216/api";
+// Адрес берётся из VITE_API_BASE_URL (файл .env в корне, см. .env.example).
+// Если переменная не задана — идём на локальный бэкенд.
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
 const http = new HttpClient({ baseUrl: API_BASE_URL });
 
 // --- Три фичи (дают справочники + submit на будущее). -----------------------
