@@ -1,4 +1,17 @@
+# Зависимости и сборка
 node_modules/
 dist/
+
+# Логи и системный мусор
 *.log
 .DS_Store
+Thumbs.db
+
+# Переменные окружения (адреса, ключи) — только локально
+.env
+.env.*
+!.env.example
+
+# Настройки IDE
+.idea/
+.vscode/
