@@ -29,7 +29,7 @@ cd gorod-dlya-vseh
 Настроить адрес бэкенда (один раз, подробнее — раздел 5):
 
 ```bash
-cp .env.example .env    # на Windows: copy .env.example .env
+cp .env.example .env   # на Windows: copy .env.example .env
 ```
 
 Дальше две команды в терминале, из папки проекта:
