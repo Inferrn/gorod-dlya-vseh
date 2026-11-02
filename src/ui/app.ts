@@ -28,6 +28,7 @@ import { AttributeForm } from "./attribute-form/attribute-form.contract";
 import { RampForm } from "./attribute-form/ramp-form";
 import { CrossingForm } from "./attribute-form/crossing-form";
 import { RoadForm } from "./attribute-form/road-form";
+import { AuthScreen } from "./auth/auth-screen";
 
 // --- Клиент. Настоящий бэкенд (Spring Boot, см. репозиторий gorod-dlya-vseh_back).
 // Адрес берётся из VITE_API_BASE_URL (файл .env в корне, см. .env.example).
@@ -173,6 +174,21 @@ if (!mapEl || !panelEl || !formContainer || !saveBtn || !debug || !coordsLabel |
     debug.style.display = "none";
     panelEl.style.display = "block";
   };
+  
+  // --- Экран авторизации (показывается перед картой) -----------------------
+  const auth = new AuthScreen(document.body, {
+    onSuccess: (phone) => {
+      console.log("Успешный вход:", phone);
+      auth.destroy(); // убираем экран входа → открывается карта
+    },
+    sendCode: async (phone) => {
+      console.log("Отправляем SMS на", phone);
+    },
+    verifyCode: async (phone, code) => {
+      console.log("Проверяем код", code, "для", phone);
+      return code !== "0000"; // для теста: 0000 — ошибка, любой другой — успех
+    },
+  });
 
   // --- Карта. По "Добавить" открываем форму для точки. ----------------------
   const mapScreen = new MapScreen(mapEl, openFormForPoint);
