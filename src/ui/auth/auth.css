@@ -1,0 +1,160 @@
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.auth-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  height: 52px;
+}
+
+.auth-back {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: #333;
+  cursor: pointer;
+  padding: 8px;
+  margin: -8px;
+  line-height: 1;
+}
+
+.auth-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 24px 40px;
+}
+
+.auth-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #111;
+  margin: 48px 0 32px;
+  text-align: center;
+}
+
+.auth-subtitle {
+  font-size: 15px;
+  color: #333;
+  text-align: center;
+  margin-bottom: 28px;
+  line-height: 1.4;
+}
+
+.auth-phone-input {
+  width: 100%;
+  max-width: 320px;
+  height: 48px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 0 16px;
+  font-size: 16px;
+  outline: none;
+  margin-bottom: 20px;
+}
+
+.auth-phone-input:focus {
+  border-color: #f0a500;
+}
+
+.auth-btn {
+  width: 100%;
+  max-width: 320px;
+  height: 48px;
+  background: #f0a500;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.auth-btn:active {
+  opacity: 0.85;
+}
+
+.auth-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.code-boxes {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.code-box {
+  width: 52px;
+  height: 52px;
+  border: 1.5px solid #ddd;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 500;
+  color: #111;
+  background: #fff;
+}
+
+.code-box.filled {
+  border-color: #ccc;
+}
+
+.code-box.error {
+  border-color: #e53935;
+  color: #e53935;
+}
+
+.code-timer {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 8px;
+}
+
+.code-resend {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.code-resend:disabled {
+  color: #bbb;
+  cursor: default;
+}
+
+.code-error-text {
+  color: #e53935;
+  font-size: 14px;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.code-sent-info {
+  font-size: 13px;
+  color: #888;
+  margin-top: 8px;
+  text-align: center;
+}
+
+.code-hidden-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 1px;
+  height: 1px;
+}
