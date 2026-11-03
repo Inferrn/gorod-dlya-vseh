@@ -1,0 +1,198 @@
+/**
+ * ============================================================================
+ *  logout.css — экран 4: подтверждение выхода
+ * ============================================================================
+ *  Экран не выезжает слайдом, а раскрывается круговой «шторкой» из кнопки
+ *  профиля: clip-path circle() от центра нажатой иконки. Поэтому у него
+ *  собственные transition/видимость, а базовые правила .screen перекрыты.
+ * ============================================================================
+ */
+
+.screen--logout {
+  --ox: 50%;
+  --oy: 100%;
+  z-index: 30;
+  padding: 0 var(--pad-screen);
+  clip-path: circle(0px at var(--ox) var(--oy));
+  transition:
+    clip-path 0.56s var(--ease-out),
+    visibility 0s linear 0.56s;
+}
+
+.screen--logout.is-active {
+  clip-path: circle(150% at var(--ox) var(--oy));
+  transition:
+    clip-path 0.56s var(--ease-out),
+    visibility 0s linear 0s;
+}
+
+/* Базовый .screen гасит неактивные экраны через opacity — здесь нельзя,
+   иначе не будет видно, как шторка закрывается обратно в иконку. */
+.screen--logout,
+.screen--logout.is-active {
+  opacity: 1;
+}
+
+.screen--logout:not(.is-active) {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Диалог получает фокус программно — рамка вокруг всего экрана не нужна. */
+.screen--logout:focus,
+.screen--logout:focus-visible {
+  outline: none;
+}
+
+/* --- Содержимое ----------------------------------------------------------- */
+.logout-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 118px;
+  text-align: center;
+}
+
+.logout-icon {
+  position: relative;
+  flex: none;
+  width: 110px;
+  height: 110px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-tint);
+  color: var(--accent-strong);
+}
+
+.logout-icon svg {
+  width: 42px;
+  height: 42px;
+}
+
+.logout-icon__halo {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(239, 156, 12, 0.4);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.logout-title {
+  margin-top: 34px;
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: #302f2c;
+}
+
+.logout-sub {
+  margin-top: 10px;
+  font-size: 12.5px;
+  line-height: 17px;
+  color: var(--muted-2);
+}
+
+.logout-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: auto;
+  margin-bottom: clamp(56px, 22vh, 190px);
+}
+
+/* --- Кнопки --------------------------------------------------------------- */
+.btn {
+  width: 100%;
+  height: 52px;
+  padding: 0 20px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-btn);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    transform 0.16s var(--ease-out),
+    background-color 0.2s ease,
+    box-shadow 0.25s ease,
+    opacity 0.2s ease;
+}
+
+.btn:active {
+  transform: scale(0.985);
+}
+
+.btn--primary {
+  background: var(--accent-strong);
+  color: var(--white);
+  box-shadow: 0 10px 24px -14px rgba(239, 156, 12, 0.9);
+}
+
+@media (hover: hover) {
+  .btn--primary:hover {
+    background: #e5940a;
+  }
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: #f1cd93;
+  color: #dc9f2f;
+}
+
+@media (hover: hover) {
+  .btn--ghost:hover {
+    background: #fffaf2;
+  }
+}
+
+.btn:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+/* Крутилка в кнопке «Выйти», пока имитируем выход. */
+.btn__spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  vertical-align: -3px;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Появление элементов (запускается классом .is-active) ----------------- */
+.screen--logout.is-active .logout-icon {
+  animation: logout-pop 0.6s var(--ease-back) 0.14s both;
+}
+
+.screen--logout.is-active .logout-icon__halo {
+  animation: halo 2.6s ease-out 0.7s infinite;
+}
+
+.screen--logout.is-active .logout-title {
+  animation: fade-up 0.5s var(--ease-out) 0.28s both;
+}
+
+.screen--logout.is-active .logout-sub {
+  animation: fade-up 0.5s var(--ease-out) 0.36s both;
+}
+
+.screen--logout.is-active .logout-actions .btn:nth-child(1) {
+  animation: fade-up 0.55s var(--ease-out) 0.46s both;
+}
+
+.screen--logout.is-active .logout-actions .btn:nth-child(2) {
+  animation: fade-up 0.55s var(--ease-out) 0.54s both;
+}
