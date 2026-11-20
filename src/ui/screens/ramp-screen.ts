@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- *  ramp-screen.ts — форма «Съезд с тротуара» (кадры 14, 15)
+ *  ramp-screen.ts — форма «Съезд с тротуара» (кадры 18, 54)
  * ============================================================================
  *
  *  ОТВЕТСТВЕННОСТЬ:
@@ -48,6 +48,8 @@ const EQUIPMENT = [
 interface RampScreenOptions {
   place: Place;
   state: RampState;
+  /** Список высот раскрыт сразу (кадр № 54). */
+  curbOpen?: boolean;
   onBack: () => void;
   onOpenHint: () => void;
   onSave: (state: RampState) => void;
@@ -124,6 +126,9 @@ export class RampScreen {
     this.buildCurbList();
     if (state.curbHeight) this.setCurbHeight(state.curbHeight, false);
     this.bind();
+
+    // Кадр № 54 — тот же экран, но со раскрытым списком высот бордюра.
+    if (this.options.curbOpen) this.toggleCurb(true);
   }
 
   private buildCurbList(): void {

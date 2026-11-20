@@ -37,15 +37,22 @@ import { MapView, Place } from "./map-view";
 import { InfoScreen, HintKind, InfoState, EMPTY_INFO } from "./info-screen";
 import { HintScreen } from "./hint-screen";
 import { RampScreen, RampState, EMPTY_RAMP } from "./ramp-screen";
+import { FrameView, frameById } from "./frames";
 import { el } from "./dom";
 
-/* --- Типы маршрутов -------------------------------------------------------- */
+/* --- Типы маршрутов --------------------------------------------------------
+ *  frameId — номер кадра макета, если экран открыт именно как кадр (см.
+ *  frames.ts). По нему строится адрес вида #/61, чтобы кадр можно было
+ *  открыть и сверить с Figma.
+ * -------------------------------------------------------------------------- */
+
+type ExpandedSection = "surface" | "slope" | "obstacles" | "comment";
 
 type Route =
-  | { name: "map" }
-  | { name: "info" }
-  | { name: "ramp" }
-  | { name: "hint"; kind: HintKind; page: number };
+  | { name: "map"; frameId?: number }
+  | { name: "info"; frameId?: number; expanded?: ExpandedSection[] }
+  | { name: "ramp"; frameId?: number; curbOpen?: boolean }
+  | { name: "hint"; kind: HintKind; page: number; frameId?: number };
 
 /* --- Мок-точка, с которой открывается приложение --------------------------- */
 
@@ -94,6 +101,7 @@ class ScreensApp {
         ? new InfoScreen({
             place: this.place,
             state: this.info,
+            expanded: route.expanded,
             onBack: () => this.go({ name: "map" }),
             onOpenHint: (kind) => this.go({ name: "hint", kind, page: 0 }),
             onSave: (state) => this.save(state),
@@ -102,6 +110,7 @@ class ScreensApp {
           ? new RampScreen({
               place: this.place,
               state: this.ramp,
+              curbOpen: route.curbOpen,
               onBack: () => this.go({ name: "map" }),
               onOpenHint: () => this.go({ name: "hint", kind: "curb", page: 0 }),
               onSave: (state) => this.saveRamp(state),
@@ -210,14 +219,39 @@ class ScreensApp {
   /* --- Хэш ---------------------------------------------------------------- */
 
   private toHash(route: Route): string {
+    // Открыто как кадр макета — адрес остаётся номером кадра.
+    if (route.frameId !== undefined) return `#/${route.frameId}`;
+
     if (route.name === "map") return "#/map";
     if (route.name === "info") return "#/info";
     if (route.name === "ramp") return "#/ramp";
     return route.page > 0 ? `#/hint-${route.kind}/${route.page + 1}` : `#/hint-${route.kind}`;
   }
 
+  /** Кадр макета → маршрут экрана. */
+  private routeFromFrame(frame: FrameView): Route {
+    if (frame.screen === "map") return { name: "map", frameId: frame.id };
+    if (frame.screen === "info") {
+      return { name: "info", frameId: frame.id, expanded: frame.expanded };
+    }
+    if (frame.screen === "ramp") {
+      return { name: "ramp", frameId: frame.id, curbOpen: frame.curbOpen };
+    }
+    return {
+      name: "hint",
+      kind: frame.hint ?? "surface",
+      page: frame.page ?? 0,
+      frameId: frame.id,
+    };
+  }
+
   private parseHash(): Route {
     const raw = location.hash.replace(/^#\/?/, "");
+
+    // Кадр по номеру из основного проекта Figma: #/61
+    const frame = /^\d+$/.test(raw) ? frameById(Number(raw)) : undefined;
+    if (frame) return this.routeFromFrame(frame);
+
     if (raw === "info") return { name: "info" };
     if (raw === "ramp") return { name: "ramp" };
 

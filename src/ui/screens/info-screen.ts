@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- *  info-screen.ts — форма «Добавить информацию» (кадры 03, 04, 07–10)
+ *  info-screen.ts — форма «Добавить информацию» (кадры 60, 63, 66–69)
  * ============================================================================
  *
  *  ОТВЕТСТВЕННОСТЬ:
@@ -75,6 +75,8 @@ const COMMENT_LIMIT = 500;
 interface InfoScreenOptions {
   place: Place;
   state: InfoState;
+  /** Разделы, раскрытые сразу (нужно для кадров вроде № 66). */
+  expanded?: Array<"surface" | "slope" | "obstacles" | "comment">;
   onBack: () => void;
   onOpenHint: (kind: HintKind) => void;
   onSave: (state: InfoState) => void;
@@ -201,6 +203,10 @@ export class InfoScreen {
     this.buildObstacles();
     this.restore();
     this.bind();
+
+    // Кадры макета отличаются тем, какие разделы раскрыты (например, № 66 —
+    // «уклон и препятствия»). Открываем их сразу, чтобы кадр совпадал с Figma.
+    this.options.expanded?.forEach((key) => this.toggleSection(key, true));
   }
 
   /** Подставить значения, если форму открыли повторно. */
