@@ -1,0 +1,585 @@
+/**
+ * ============================================================================
+ *  screens.css — стили конкретных экранов
+ * ============================================================================
+ *
+ *  Общие вещи (карточка, кнопки, меню) — в base.css. Здесь только то, что
+ *  относится к отдельным экранам: карта, форма «Добавить информацию»,
+ *  подсказки, съезд с тротуара.
+ * ============================================================================
+ */
+
+/* ===========================================================================
+ *  1. КАРТА
+ * ======================================================================== */
+
+.screen--map {
+  /* Карта занимает всё, кроме меню; лист выезжает поверх неё снизу. */
+  justify-content: flex-end;
+}
+
+.map-view {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.map-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* --- Поиск ---------------------------------------------------------------- */
+.map-search {
+  position: absolute;
+  top: 14px;
+  left: var(--pad-x);
+  right: var(--pad-x);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+  padding: 0 16px;
+  border-radius: 16px;
+  background: var(--c-surface);
+  box-shadow: 0 4px 18px rgba(37, 41, 31, 0.12);
+}
+
+.map-search__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: none;
+  font-family: inherit;
+  font-size: var(--fs-body);
+  color: var(--c-text);
+}
+
+.map-search__input::placeholder {
+  color: var(--c-muted-2);
+}
+
+.map-search__mic {
+  flex: none;
+  color: var(--c-text-2);
+}
+
+/* Чип города под поиском: в макете он показывает, в каком городе карта. */
+.map-city {
+  position: absolute;
+  top: 78px;
+  left: var(--pad-x);
+  z-index: 5;
+  padding: 9px 16px;
+  border-radius: 12px;
+  background: var(--c-surface);
+  font-size: var(--fs-sub);
+  box-shadow: 0 4px 18px rgba(37, 41, 31, 0.12);
+}
+
+/* --- Управление картой (зум, «моё место») --------------------------------- */
+.map-controls {
+  position: absolute;
+  top: 82px;
+  right: var(--pad-x);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.map-zoom {
+  display: flex;
+  flex-direction: column;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--c-surface);
+  box-shadow: 0 4px 18px rgba(37, 41, 31, 0.12);
+}
+
+.map-zoom__btn {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  color: var(--c-text-2);
+}
+
+.map-zoom__btn + .map-zoom__btn {
+  border-top: 1px solid var(--c-line);
+}
+
+.map-locate {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--c-surface);
+  color: var(--c-text-2);
+  box-shadow: 0 4px 18px rgba(37, 41, 31, 0.12);
+}
+
+/* --- Нижний лист карты ---------------------------------------------------- */
+.sheet {
+  position: relative;
+  z-index: 10;
+  flex: none;
+  margin-top: -24px; /* лист «заезжает» на карту скруглёнными углами */
+  padding: 10px var(--pad-x) 18px;
+  border-radius: var(--r-sheet) var(--r-sheet) 0 0;
+  background: var(--c-surface);
+  box-shadow: var(--shadow-sheet);
+  animation: sheet-in 320ms var(--ease) both;
+}
+
+/* Выезд листа снизу. Появление точки на карте — единственный момент, когда
+   лист возникает на глазах, поэтому анимируем именно его. */
+@keyframes sheet-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet {
+    animation: none;
+  }
+}
+
+.sheet__handle {
+  width: 36px;
+  height: 4px;
+  margin: 0 auto 18px;
+  border-radius: 2px;
+  background: #e0dfd4;
+}
+
+.sheet__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sheet__title {
+  margin: 14px 0 0;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.sheet__text {
+  margin: 8px 0 0;
+  font-size: var(--fs-sub);
+  color: var(--c-muted);
+}
+
+.sheet__coords {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: var(--fs-sub);
+  color: var(--c-muted);
+}
+
+.sheet__coords button {
+  display: grid;
+  place-items: center;
+  color: var(--c-muted);
+}
+
+.sheet__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--c-line);
+}
+
+.sheet__action {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  border-radius: 16px;
+  background: var(--c-surface-2);
+  font-size: var(--fs-sub);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sheet__action--accent {
+  background: var(--c-accent);
+  font-weight: 600;
+}
+
+.sheet__action:active {
+  background: #eae9e2;
+}
+
+.sheet__action--accent:active {
+  background: var(--c-accent-press);
+}
+
+/* --- Маркеры на карте ----------------------------------------------------- */
+/* Своя иконка вместо стандартной «капли» Leaflet: в макете маркер — круг
+   с точкой внутри, оранжевый для выбранного места. */
+.map-pin {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  border: 2px solid #fff;
+  color: var(--c-text);
+  box-shadow: 0 3px 10px rgba(37, 41, 31, 0.28);
+}
+
+.map-pin--mid {
+  background: var(--c-surface);
+  color: var(--c-accent);
+  border-color: var(--c-accent);
+}
+
+/* ===========================================================================
+ *  2. ФОРМА «ДОБАВИТЬ ИНФОРМАЦИЮ»
+ * ======================================================================== */
+
+/* Строка-выбор: подпись сверху, значение снизу, справа «?» и шеврон.
+   Слева — кнопка (открывает список), «?» — отдельная кнопка (открывает
+   подсказку с фото): это разные действия, поэтому и разные кнопки. */
+.picker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 6px 0;
+}
+
+.picker__main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: block;
+  text-align: left;
+}
+
+.picker__label {
+  display: block;
+  font-size: var(--fs-note);
+  color: var(--c-muted);
+}
+
+/* Выбранное значение — как основной текст: серым остаётся только подсказка
+   «Выберите значение». */
+.picker__label--filled {
+  margin-top: 5px;
+  font-size: var(--fs-body);
+  color: var(--c-text);
+  letter-spacing: -0.01em;
+}
+
+.picker__value {
+  display: block;
+  margin-top: 5px;
+  font-size: var(--fs-body);
+  letter-spacing: -0.01em;
+}
+
+/* Поле комментария */
+.comment {
+  position: relative;
+  margin: 4px 0 16px;
+}
+
+.comment__area {
+  display: block;
+  width: 100%;
+  height: 76px;
+  padding: 14px 14px 26px;
+  border: none;
+  border-radius: var(--r-sm);
+  background: var(--c-surface-3);
+  font-family: inherit;
+  font-size: var(--fs-body);
+  line-height: 1.4;
+  color: var(--c-text);
+  resize: none;
+  outline: none;
+}
+
+.comment__area::placeholder {
+  color: var(--c-muted-2);
+}
+
+.comment__count {
+  position: absolute;
+  right: 14px;
+  bottom: 10px;
+  font-size: var(--fs-note);
+  color: var(--c-muted-2);
+  pointer-events: none;
+}
+
+/* Блок секции: заголовок + содержимое, свёрнутое по умолчанию */
+.section__body {
+  padding-bottom: 8px;
+}
+
+.section__body[hidden] {
+  display: none;
+}
+
+/* ===========================================================================
+ *  3. ПОДСКАЗКИ (тип покрытия, уклон, высота бордюра)
+ * ======================================================================== */
+
+.hint-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 18px;
+  /* Смена страницы подсказки: контент мягко проявляется, чтобы «1» и «2»
+     читались как разные страницы, а не как мигание. */
+  animation: hint-in 260ms var(--ease) both;
+}
+
+@keyframes hint-in {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hint-list {
+    animation: none;
+  }
+}
+
+/* Карточка подсказки с фотографией сверху (покрытия, уклон 25/35, бордюр) */
+.hint-card {
+  padding: 4px;
+  background: var(--c-surface);
+  border-radius: var(--r-card);
+  overflow: hidden;
+}
+
+.hint-card__photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+  object-fit: cover;
+}
+
+.hint-card__body {
+  padding: 8px 12px 10px;
+}
+
+.hint-card__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.hint-card__text {
+  margin: 4px 0 0;
+  font-size: var(--fs-sub);
+  line-height: 1.35;
+  color: var(--c-muted);
+}
+
+/* Карточка «фото слева, текст справа» (уклон до 20°) */
+.hint-split {
+  display: flex;
+  gap: 18px;
+  padding: 22px;
+  background: var(--c-surface);
+  border-radius: var(--r-card);
+}
+
+.hint-split__photo {
+  flex: none;
+  width: 160px;
+  height: 181px;
+  border-radius: 18px;
+  object-fit: cover;
+}
+
+.hint-split__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.hint-badge {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: var(--c-accent-soft);
+  font-size: var(--fs-sub);
+  font-weight: 500;
+}
+
+.hint-split__title {
+  margin: 18px 0 0;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.hint-split__text {
+  margin: 14px 0 0;
+  font-size: var(--fs-sub);
+  line-height: 1.35;
+  color: var(--c-muted);
+}
+
+/* Нумерованный список «Как определить высоту» */
+.steps {
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.step {
+  display: flex;
+  gap: 16px;
+}
+
+.step__num {
+  flex: none;
+  width: 22px;
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+
+.step__title {
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+
+.step__text {
+  margin: 6px 0 0;
+  font-size: var(--fs-sub);
+  line-height: 1.35;
+  color: var(--c-muted);
+}
+
+.hint-title {
+  margin: 26px 0 0;
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* --- Нижняя панель подсказки: «К форме» · 1 2 · «Далее» -------------------- */
+.hint-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+}
+
+.pager {
+  display: flex;
+  gap: 8px;
+  margin: 0 auto;
+}
+
+.pager__btn {
+  min-width: 44px;
+  height: 46px;
+  padding: 0 10px;
+  border-radius: 12px;
+  background: var(--c-surface);
+  font-size: var(--fs-body);
+  color: var(--c-text-2);
+}
+
+.pager__btn[aria-selected="true"] {
+  background: var(--c-accent);
+  color: var(--c-text);
+  font-weight: 600;
+}
+
+.btn-next {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 46px;
+  padding: 0 18px;
+  border-radius: 12px;
+  background: var(--c-accent);
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+
+.btn-next:active,
+.pager__btn:active {
+  filter: brightness(0.96);
+}
+
+/* ===========================================================================
+ *  4. СЪЕЗД С ТРОТУАРА
+ * ======================================================================== */
+
+/* Группа чекбоксов «ОБОРУДОВАНИЕ СЪЕЗДА» — подпись над карточкой */
+.group-label {
+  margin: 24px 0 0;
+  font-size: var(--fs-kicker);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+/* Подписи под фото бордюра: «3 см на фото» / «5 см на фото».
+   В макете это две одинаковые плашки, а не просто текст. */
+.curb-scale {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding-top: 12px;
+}
+
+.curb-scale span {
+  padding: 12px 16px;
+  border-radius: var(--r-sm);
+  background: var(--c-surface-2);
+  font-size: var(--fs-sub);
+  color: var(--c-muted);
+}
+
+.curb-scale b {
+  margin-right: 8px;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--c-text);
+}
