@@ -14,5 +14,13 @@ export default defineConfig({
   build: {
     outDir: "../../dist",
     emptyOutDir: true,
+    // Две страницы: текущий UI (index.html) и новые экраны по макетам
+    // Figma (screens.html). После ревью останется одна.
+    rollupOptions: {
+      input: {
+        main: "src/ui/index.html",
+        screens: "src/ui/screens.html",
+      },
+    },
   },
 });

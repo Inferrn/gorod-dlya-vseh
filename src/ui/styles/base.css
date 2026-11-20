@@ -1,0 +1,542 @@
+/**
+ * ============================================================================
+ *  base.css — каркас приложения и общие элементы
+ * ============================================================================
+ *
+ *  Здесь только то, что повторяется на всех экранах: сброс стилей, «экран»
+ *  (шапка / прокрутка / нижняя кнопка / меню), карточка, кнопки, чипы,
+ *  переключатели. Стили конкретных экранов — в screens.css.
+ * ============================================================================
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--c-text);
+  background: #e9e8e2; /* видно только на широком экране вокруг приложения */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  font-family: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------------------
+ * Приложение — колонка на всю высоту.
+ * На телефоне занимает весь экран, на десктопе — «телефон» по центру,
+ * чтобы вёрстку можно было проверять в браузере.
+ * ------------------------------------------------------------------------- */
+.app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 430px;
+  height: 100dvh;
+  margin: 0 auto;
+  overflow: hidden;
+  background: var(--c-bg);
+}
+
+@media (min-width: 520px) and (min-height: 760px) {
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .app {
+    height: min(956px, 94dvh);
+    border-radius: 34px;
+    box-shadow: 0 24px 60px rgba(37, 41, 31, 0.18);
+  }
+}
+
+/* Сцена: сюда приложение вставляет текущий экран. Меню снизу остаётся
+   общим, поэтому экраны занимают только эту область. */
+.stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+ * Экран: шапка, прокручиваемая середина, нижняя кнопка, меню.
+ * Flex-колонка, а не absolute: середина сама занимает всё свободное место,
+ * и кнопка с меню всегда прижаты к низу — независимо от высоты контента.
+ * ------------------------------------------------------------------------- */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-bg);
+}
+
+.screen[hidden] {
+  display: none;
+}
+
+.screen__head {
+  flex: none;
+  position: relative;
+  /* Отступ сверху учитывает «чёлку»/статус-бар телефона: на iPhone это
+     env(safe-area-inset-top), в браузере — 0. */
+  padding: calc(22px + env(safe-area-inset-top)) var(--pad-x) 0;
+}
+
+.screen__body {
+  flex: 1 1 auto;
+  min-height: 0; /* без этого flex-элемент не даёт себя прокручивать */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 var(--pad-x);
+  scrollbar-width: none;
+}
+
+.screen__body::-webkit-scrollbar {
+  display: none;
+}
+
+.screen__foot {
+  flex: none;
+  /* Фон непрозрачный: длинный контент прокручивается под кнопкой, и без
+     подложки он просвечивал бы сквозь неё. */
+  background: var(--c-bg);
+  padding: 12px var(--pad-x) 0;
+}
+
+/* --- Шапка ---------------------------------------------------------------- */
+
+/* Надзаголовок: «ДОБАВИТЬ ИНФОРМАЦИЮ», «ПОДСКАЗКА · УКЛОН» */
+.kicker {
+  margin: 0;
+  font-size: var(--fs-kicker);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.screen__title {
+  margin: 8px 0 0;
+  font-size: var(--fs-title);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.screen__subtitle {
+  margin: 10px 0 0;
+  font-size: var(--fs-sub);
+  line-height: 1.35;
+  color: var(--c-muted);
+}
+
+/* Адрес объекта: иконка-метка + строка */
+.addr {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: var(--fs-sub);
+  color: var(--c-muted);
+}
+
+.addr svg {
+  flex: none;
+  color: var(--c-muted);
+}
+
+/* Круглая кнопка закрытия в правом верхнем углу шапки */
+.icon-btn {
+  position: absolute;
+  top: calc(20px + env(safe-area-inset-top));
+  right: var(--pad-x);
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--c-surface);
+  color: var(--c-text-2);
+  box-shadow: 0 2px 10px rgba(37, 41, 31, 0.08);
+}
+
+.icon-btn:active {
+  background: var(--c-surface-2);
+}
+
+/* ---------------------------------------------------------------------------
+ * Карточка и строки внутри неё
+ * ------------------------------------------------------------------------- */
+.card {
+  margin-top: 20px;
+  padding: 0 20px;
+  background: var(--c-surface);
+  border-radius: var(--r-card);
+}
+
+/* Заголовок группы («Уклон», «Препятствия», «Высота бордюра») */
+.card__title {
+  margin: 0;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Строка-гармошка: заголовок + [значок «?»] + шеврон.
+   Высота строки в макете — 36 px: 24 px на текст и по 6 px сверху/снизу. */
+.row-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 6px 0;
+}
+
+.row-head__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: block;
+  text-align: left;
+}
+
+.row-head__text h2 {
+  margin: 0;
+}
+
+.row-head__sub {
+  margin: 4px 0 0;
+  font-size: var(--fs-sub);
+  color: var(--c-muted);
+}
+
+/* Кнопки-значки внутри строки: «?» и шеврон */
+.row-head__icon {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  color: var(--c-muted);
+}
+
+.row-head__chevron {
+  transition: transform var(--dur) var(--ease);
+}
+
+/* Шеврон разворачивается, когда раздел открыт: состояние живёт на кнопке. */
+[aria-expanded="true"] > .row-head__chevron,
+[aria-expanded="true"] .row-head__chevron {
+  transform: rotate(180deg);
+}
+
+.divider {
+  height: 1px;
+  background: var(--c-line);
+}
+
+/* Пункт списка с выбором справа (радио / чекбокс) */
+.option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 5px 0;
+  text-align: left;
+  font-size: var(--fs-body);
+  line-height: 1.25;
+}
+
+.option__text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Пункт с подписью под заголовком — в макете он выше обычного. */
+.option--tall {
+  padding: 12px 0;
+}
+
+.option__sub {
+  display: block;
+  margin: 4px 0 0;
+  font-size: var(--fs-sub);
+  color: var(--c-muted);
+}
+
+/* ---------------------------------------------------------------------------
+ * Радио, чекбокс, тумблер
+ * Нарисованы на CSS, а не <input>: в макете у них свои размеры и цвет
+ * обводки, и подогнать нативный контрол под них невозможно.
+ * Роль и состояние для скринридеров задаются в TS (role="radio"/"checkbox").
+ * ------------------------------------------------------------------------- */
+.radio {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid #b9bcb0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  transition: border-color 160ms ease;
+}
+
+.radio::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--c-accent);
+  transform: scale(0);
+  transition: transform 160ms var(--ease);
+}
+
+[aria-checked="true"] > .radio {
+  border-color: var(--c-accent);
+}
+
+[aria-checked="true"] > .radio::after {
+  transform: scale(1);
+}
+
+.check {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid #b9bcb0;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  color: transparent;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+[aria-checked="true"] > .check {
+  background: var(--c-accent);
+  border-color: var(--c-accent);
+  color: var(--c-text);
+}
+
+.switch {
+  flex: none;
+  position: relative;
+  width: 52px;
+  height: 32px;
+  border-radius: 16px;
+  background: #e6e6dc;
+  transition: background 200ms ease;
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--c-surface);
+  box-shadow: 0 1px 3px rgba(37, 41, 31, 0.2);
+  transition: transform 200ms var(--ease);
+}
+
+/* Обёртка тумблера: кнопка без фона, чтобы попадать пальцем в 44 px */
+.switch-host {
+  flex: none;
+  display: grid;
+  place-items: center;
+  padding: 6px;
+  margin: -6px;
+}
+
+[aria-checked="true"] > .switch {
+  background: var(--c-accent);
+}
+
+[aria-checked="true"] > .switch::after {
+  transform: translateX(20px);
+}
+
+/* ---------------------------------------------------------------------------
+ * Кнопки
+ * ------------------------------------------------------------------------- */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 60px;
+  border-radius: 20px;
+  background: var(--c-accent);
+  color: var(--c-text);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.btn-primary:active {
+  background: var(--c-accent-press);
+}
+
+.btn-primary:disabled {
+  opacity: 0.55;
+}
+
+.btn-ghost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 16px;
+  border-radius: 14px;
+  background: var(--c-surface);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.btn-ghost:active {
+  background: var(--c-surface-2);
+}
+
+/* Сноска под главной кнопкой */
+.foot-note {
+  margin: 0;
+  padding: 10px 0 12px 16px;
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--c-muted);
+}
+
+/* ---------------------------------------------------------------------------
+ * Чип и плашка-подсказка
+ * ------------------------------------------------------------------------- */
+.chip {
+  display: inline-block;
+  padding: 7px 14px;
+  border-radius: var(--r-chip);
+  background: var(--c-chip);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+
+.note {
+  display: flex;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: var(--c-note);
+}
+
+.note__icon {
+  flex: none;
+  margin-top: 2px;
+  color: var(--c-text-2);
+}
+
+.note__title {
+  margin: 0;
+  font-size: var(--fs-sub);
+  font-weight: 600;
+}
+
+.note__text {
+  margin: 6px 0 0;
+  font-size: var(--fs-sub);
+  line-height: 1.45;
+  color: var(--c-text-2);
+}
+
+/* ---------------------------------------------------------------------------
+ * Нижняя навигация: Карта · Добавить · Профиль
+ * В макете пункт с подписью занимает 110×47, поэтому отступы небольшие:
+ * иконка 24 + зазор 4 + подпись 11.
+ * ------------------------------------------------------------------------- */
+.bottom-nav {
+  flex: none;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  gap: 8px;
+  padding: 6px 12px calc(8px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--c-line);
+  background: var(--c-surface);
+}
+
+.bottom-nav__item {
+  flex: 0 1 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 4px;
+  border-radius: var(--r-sm);
+  color: var(--c-muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.bottom-nav__item[aria-selected="true"] {
+  background: var(--c-accent-soft);
+  color: var(--c-text-2);
+  font-weight: 600;
+}
+
+.bottom-nav__item[aria-selected="true"] svg {
+  color: var(--c-accent);
+}
+
+/* ---------------------------------------------------------------------------
+ * Всплывающее сообщение (тост)
+ * ------------------------------------------------------------------------- */
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--nav-h) + 16px);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100% - 40px);
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: #2f3328;
+  color: #fff;
+  font-size: var(--fs-sub);
+  box-shadow: var(--shadow-float);
+  transform: translate(-50%, 12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms var(--ease);
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}

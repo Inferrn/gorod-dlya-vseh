@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Кадр макета</title>
+  <style>
+    /* Служебная страница для сверки с Figma: показывает один экран в рамке
+       телефона 402×956 (размер кадра в макете). Нужна, чтобы снимать
+       скриншоты ровно по кадру, не завися от размера окна браузера.
+       Использование: /frame.html?s=/info */
+    html, body { margin: 0; padding: 0; background: #fff; }
+    iframe { display: block; width: 402px; height: 956px; border: 0; }
+  </style>
+</head>
+<body>
+  <iframe id="frame" src="./screens.html" title="Экран приложения"></iframe>
+  <script>
+    const screen = new URLSearchParams(location.search).get("s") || "/map";
+    document.getElementById("frame").src = "./screens.html#" + screen;
+  </script>
+</body>
+</html>
