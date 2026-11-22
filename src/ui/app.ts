@@ -25,6 +25,7 @@ import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/map.css";
 import "./styles/rating.css";
+import "./styles/achievements.css";
 import "./styles/logout.css";
 import "./styles/motion.css";
 
@@ -45,6 +46,7 @@ import { RoadForm } from "./attribute-form/road-form";
 import { RatingScreen, RatingViewKey } from "./rating/rating-screen";
 import { ScreenManager } from "./screens/screen-manager";
 import { LogoutScreen } from "./screens/logout-screen";
+import { AchievementsScreen } from "./screens/achievements-screen";
 import { showToast } from "./components/toast";
 import { need } from "./shared/dom";
 import { wait } from "./shared/motion";
@@ -63,7 +65,7 @@ const road = createRoadFeature(http);
 // --- Элементы страницы. ------------------------------------------------
 const ratingScreenEl = need('[data-screen="rating"]');
 const mapScreenEl = need('[data-screen="map"]');
-
+const achievementsScreenEl = need('[data-screen="achievements"]');
 const mapEl = need("#map");
 const panelEl = need("#form-panel");
 const formContainer = need("#form-container");
@@ -84,7 +86,13 @@ const rating = new RatingScreen(RATING_MOCK, {
 });
 rating.init();
 
-const manager = new ScreenManager({ rating: ratingScreenEl, map: mapScreenEl }, "rating");
+const achievements = new AchievementsScreen();
+achievements.init();
+
+const manager = new ScreenManager(
+  { rating: ratingScreenEl, map: mapScreenEl, achievements: achievementsScreenEl },
+  "rating",
+);
 
 // --- Экран 4: подтверждение выхода. ----------------------------------------
 let logoutOpen = false;
@@ -227,7 +235,7 @@ function ensureMap(): void {
 // --- Навигация --------------------------------------------------------------
 
 /** Какой основной экран лежит под оверлеем выхода. */
-let baseScreen: "rating" | "map" = "rating";
+let baseScreen: "rating" | "map" | "achievements" = "rating";
 /** Идёт переход между экранами — новые клики игнорируем, чтобы не рвать анимацию. */
 let navigating = false;
 
@@ -238,12 +246,13 @@ function writeHash(hash: string): void {
   window.history.replaceState(null, "", hash);
 }
 
-function parseRoute(): { screen: "rating" | "map" | "logout"; view: RatingViewKey } {
+function parseRoute(): { screen: "rating" | "map" | "logout" | "achievements"; view: RatingViewKey } {
   const raw = window.location.hash.replace(/^#\/?/, "");
   const [screen, view] = raw.split("/");
 
   if (screen === "map") return { screen: "map", view: "table" };
   if (screen === "logout") return { screen: "logout", view: "table" };
+if (screen === "achievements") return { screen: "achievements", view: "table" };
 
   const known = (["table", "podium", "list"] as const).find((key) => key === view);
   return { screen: "rating", view: known ?? "table" };
@@ -382,6 +391,10 @@ if (initialRoute.screen === "map") {
   void manager.show("map", { animate: false }).then(() => {
     mapScreen?.invalidateSize();
   });
+}
+if (initialRoute.screen === "achievements") {
+  baseScreen = "achievements";
+  void manager.show("achievements", { animate: false });
 }
 
 rating.goTo(initialRoute.view, { animate: false });

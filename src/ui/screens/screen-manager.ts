@@ -15,7 +15,7 @@
 
 import { EASE_OUT, prefersReducedMotion } from "../shared/motion";
 
-export type MainScreenKey = "rating" | "map";
+export type MainScreenKey = "rating" | "map" | "achievements";
 
 interface ShowOptions {
   /** Откуда въезжает новый экран. */
