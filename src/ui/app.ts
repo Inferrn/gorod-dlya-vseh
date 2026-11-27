@@ -74,6 +74,7 @@ const debugEl = need("#debug");
 const coordsLabel = need("#panel-coords");
 const closeBtn = need("#panel-close");
 const mapRatingBtn = need<HTMLButtonElement>("#map-rating-btn");
+const mapAchievementsBtn = need<HTMLButtonElement>("#map-achievements-btn");
 const navButtons = Array.from(document.querySelectorAll<HTMLButtonElement>(".nav-btn"));
 
 // --- Экраны 1–3: рейтинг. ---------------------------------------------------
@@ -250,12 +251,14 @@ function parseRoute(): { screen: "rating" | "map" | "logout" | "achievements"; v
   const raw = window.location.hash.replace(/^#\/?/, "");
   const [screen, view] = raw.split("/");
 
-  if (screen === "map") return { screen: "map", view: "table" };
+   if (screen === "rating") {
+    const known = (["table", "podium", "list"] as const).find((key) => key === view);
+    return { screen: "rating", view: known ?? "table" };
+  }
   if (screen === "logout") return { screen: "logout", view: "table" };
-if (screen === "achievements") return { screen: "achievements", view: "table" };
+  if (screen === "achievements") return { screen: "achievements", view: "table" };
 
-  const known = (["table", "podium", "list"] as const).find((key) => key === view);
-  return { screen: "rating", view: known ?? "table" };
+  return { screen: "map", view: "table" };
 }
 
 /** Уйти на карту (кнопки «назад» и «карандаш» внизу). */
@@ -291,6 +294,19 @@ function goRating(view: RatingViewKey = rating.view): void {
 
   void manager.show("rating", { from: "left" }).then(() => {
     baseScreen = "rating";
+    navigating = false;
+  });
+}
+
+/** Перейти в «Мои достижения» (кнопка «Достижения» на карте) */
+function goAchievements(): void {
+  if (navigating || logoutOpen || baseScreen === "achievements") return;
+
+  navigating = true;
+  writeHash("#/achievements");
+
+  void manager.show("achievements", { from: "right" }).then(() => {
+    baseScreen = "achievements";
     navigating = false;
   });
 }
@@ -355,6 +371,8 @@ for (const button of navButtons) {
 }
 
 mapRatingBtn.addEventListener("click", () => goRating());
+mapAchievementsBtn.addEventListener("click", () => goAchievements());
+
 
 saveBtn.addEventListener("click", () => {
   if (!shell || !shell.hasActiveSection()) {

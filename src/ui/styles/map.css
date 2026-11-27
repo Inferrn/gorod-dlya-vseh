@@ -103,10 +103,14 @@
   opacity: 0.85;
 }
 
+.map-achievements-btn {
+  top: calc(64px + env(safe-area-inset-top));
+}
+
 /* Кнопка геолокации «Я здесь» — под кнопкой «Рейтинг», чтобы не наезжали. */
 .locate-btn {
   position: absolute;
-  top: calc(64px + env(safe-area-inset-top));
+  top: calc(116px + env(safe-area-inset-top));
   right: 12px;
   z-index: 1000;
   height: 44px;
