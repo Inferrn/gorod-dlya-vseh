@@ -1,0 +1,140 @@
+/**
+ * ============================================================================
+ *  motion.css — все keyframes в одном месте
+ * ============================================================================
+ *  Правило: анимируем только transform/opacity (и clip-path там, где без него
+ *  никак), чтобы не дёргать layout на каждом кадре.
+ * ============================================================================
+ */
+
+/* Строка рейтинга выезжает снизу и проявляется. */
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Пьедестал: колонна вырастает из нуля. */
+@keyframes podium-grow {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--bar, 160px);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Звезда в заголовке «Рейтинг участников». */
+@keyframes star-pop {
+  0% {
+    opacity: 0;
+    transform: rotate(-40deg) scale(0.45);
+  }
+  60% {
+    opacity: 1;
+    transform: rotate(7deg) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+/* Кружок-иконка на экране выхода. */
+@keyframes logout-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Мягкое «дыхание» вокруг иконки выхода. */
+@keyframes halo {
+  0% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  70% {
+    opacity: 0;
+    transform: scale(1.42);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.42);
+  }
+}
+
+/* Волна от нажатия на иконку нижней навигации. */
+@keyframes nav-ripple {
+  0% {
+    opacity: 0.16;
+    transform: scale(0.4);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+/* Тост */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Уважаем системную настройку «уменьшить движение»: оставляем смену
+   состояний, но без полётов и задержек.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

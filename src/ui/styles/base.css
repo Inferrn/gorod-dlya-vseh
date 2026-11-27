@@ -1,0 +1,222 @@
+/**
+ * ============================================================================
+ *  base.css — каркас приложения: сцена, «телефон», экраны, нижняя навигация
+ * ============================================================================
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--text);
+  background: #1b1b1b;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overscroll-behavior: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+svg {
+  display: block;
+}
+
+/* ---------------------------------------------------------------------------
+   Сцена: тёмный фон + «телефон» по центру. На узком экране телефон
+   разворачивается во весь экран — так приложение и живёт на устройстве.
+   --------------------------------------------------------------------------- */
+.stage {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background:
+    radial-gradient(110% 80% at 50% -10%, #2e2e2e 0%, #1d1d1d 52%, #141414 100%);
+}
+
+.device {
+  position: relative;
+  width: 390px;
+  height: 844px;
+  max-height: calc(100dvh - 40px);
+  background: var(--white);
+  border-radius: 36px;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 0 0 8px rgba(255, 255, 255, 0.03),
+    0 40px 90px -24px rgba(0, 0, 0, 0.85);
+}
+
+.screens {
+  position: absolute;
+  inset: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Экран. Экраны лежат стопкой; неактивные всё равно имеют размер
+   (visibility вместо display: none) — иначе Leaflet не сможет измерить
+   контейнер карты до первого показа.
+   --------------------------------------------------------------------------- */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.screen.is-active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+/* ---------------------------------------------------------------------------
+   Нижняя навигация из макета: назад / добавить / профиль.
+   Иконки 24px, кнопки 48px — палец попадает без прицеливания.
+   --------------------------------------------------------------------------- */
+.bottom-nav {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 88px;
+  padding: 0 38px calc(10px + env(safe-area-inset-bottom));
+}
+
+.nav-btn {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 15px;
+  background: transparent;
+  color: var(--nav-icon);
+  cursor: pointer;
+  transition:
+    transform 0.18s var(--ease-out),
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.nav-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.nav-btn::after {
+  /* Волна от нажатия — чисто визуальная, поэтому pointer-events: none. */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--accent);
+  opacity: 0;
+  transform: scale(0.4);
+  pointer-events: none;
+}
+
+.nav-btn.is-pressed::after {
+  animation: nav-ripple 0.5s var(--ease-out) forwards;
+}
+
+@media (hover: hover) {
+  .nav-btn:hover {
+    background: #f6f6f2;
+    color: #45463f;
+  }
+}
+
+.nav-btn:active {
+  transform: scale(0.9);
+}
+
+/* ---------------------------------------------------------------------------
+   Тост — короткое сообщение снизу. Живёт над нижней навигацией.
+   --------------------------------------------------------------------------- */
+.toast {
+  position: absolute;
+  left: 50%;
+  bottom: 104px;
+  z-index: 60;
+  max-width: 300px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgba(40, 40, 35, 0.94);
+  color: #fff;
+  font-size: 13px;
+  line-height: 18px;
+  text-align: center;
+  opacity: 0;
+  transform: translate(-50%, 10px) scale(0.97);
+  pointer-events: none;
+  transition:
+    opacity 0.24s ease,
+    transform 0.32s var(--ease-out);
+}
+
+.toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+/* ---------------------------------------------------------------------------
+   Телефон на десктопе; на мобильном — во весь экран.
+   --------------------------------------------------------------------------- */
+@media (max-width: 480px), (max-height: 700px) {
+  .stage {
+    display: block;
+    padding: 0;
+    background: var(--white);
+  }
+
+  .device {
+    width: 100%;
+    height: 100dvh;
+    max-height: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
